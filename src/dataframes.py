@@ -10,6 +10,7 @@ class df_9:
         self.new = self.new_df()
         self.new_cols = self.new.columns
         self.max, self.max_cols = self.three_bests()
+        pass
 
     def new_df(self): 
         #Definition of a new dataframe gathering results from the average of each threshold function and type combination
@@ -46,7 +47,7 @@ class df_9:
             yy = (self.new.iloc[i]).to_numpy()
             sns.barplot(x=self.new.columns[1:], y=yy[1:], ax=ax[i], hue=self.new.columns[1:])
             ax[i].set_ylabel(yy[0])
-            ax[i].set_xlabel(' ')
+            ax[i].set_xlabel((self.new.iloc[i]).name)
 
             
         plt.tight_layout()
@@ -71,6 +72,7 @@ class df_Filters:
         self.df = df 
         self.new = self.summary_df(methods_name)
         self.methods_name = methods_name
+        pass
 
     def summary_df(self, methods_name): 
         new = pd.DataFrame()
@@ -95,6 +97,7 @@ class df_Filters:
         for i in range(self.new.shape[0]):
             yy = (self.new.iloc[i]).to_numpy()
             sns.barplot(x=self.new.columns[1:], y=yy[1:], label=yy[0], ax=ax[i], hue=self.new.columns[1:])
+            ax[i].set_xlabel((self.new.iloc[i]).name)
             plt.setp(ax[i].xaxis.get_majorticklabels(), rotation=45, ha='right')  # Rotate x-axis labels
 
 
@@ -131,7 +134,8 @@ class df_wavelets:
 
         for i in range(self.new.shape[0]):
             yy = (self.new.iloc[i]).to_numpy()
-            sns.barplot(x=self.new.columns[1:], y=yy[1:], label=yy[0], ax=ax[i], hue=self.new.columns[1:])
+            sns.barplot(x=self.new.columns[1:], y=yy[1:], ax=ax[i], hue=self.new.columns[1:])
+            ax[i].set_xlabel((self.new.iloc[i]).name)
             plt.setp(ax[i].xaxis.get_majorticklabels(), rotation=45, ha='right')  # Rotate x-axis labels
 
 
