@@ -1,5 +1,5 @@
 # Ultrasound speckle reduction using adaptive wavelet thresholding
-Optimization for Computer Vision Project
+#### Optimization for Computer Vision Project
 
 Laura Fuentes Vicente, M2 Mathematics and Artificial Intelligence, Paris-Saclay University 2023/2024
 
@@ -37,4 +37,6 @@ conda install -c conda-forge matplotlib
 ```
 
 [1] https://idp.springer.com/authorize/casa?redirect_uri=https://link.springer.com/article/10.1007/s11045-021-00799-4&casa_token=HySOHIRizsMAAAAA:tXK0_ObkRiIlNKJ8m3Zz8e_kWEgiza0RjYKOya5IBrW723lsM3liut2xXt5HI8cEeK7IVeuGSJ98TxSy 
+
+
 [2] https://www.kaggle.com/datasets/anaselmasry/datasetbusiwithgt
