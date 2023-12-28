@@ -1,6 +1,7 @@
 import numpy as np 
 import matplotlib.pyplot as plt 
 import pywt
+import scipy
 from skimage import exposure, img_as_float
 
 class Speckle_removal: 
@@ -59,24 +60,25 @@ class Speckle_removal:
         self.final_plot(self._r, method)
         return self._r
 
-def sigma_l2():
-        global D 
-        return (np.median(np.abs(D))/0.6745)**2
 
 class Paper_approach(Speckle_removal): 
     
     def thresholding_fct():
-        global H, log_img, D
-        sigmai = np.var(log_img)
+        global H, log_img, D, A
+        D_ = D[np.nonzero(D)]
+        H_ = log_img[np.nonzero(log_img)]
+        sigmai = (np.median(np.abs(H_))/scipy.stats.norm.ppf(0.75))
         beta = np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
-        tau =  2*beta*np.abs(sigmai - sigma_l2()) / np.sqrt(sigmai)
+        tau =  2*beta*np.abs(sigmai**2 - (np.median(np.abs(D_))/0.6745)**2) / sigmai
         return tau
     
     def XT(tau):
         global H, nl
         res_wav = H.copy()
+        if tau == np.nan:
+            return res_wav
         inf_tau = np.where(np.abs(H) < tau)
-        for i in inf_tau: res_wav[i]  = H[i]*np.exp(nl * (np.abs(H[i]) - tau))
+        for i in inf_tau: res_wav[i] = H[i]*np.exp(nl * (np.abs(H[i]) - tau))
         return res_wav
     
     def run(self, level1, level2, wav, thrmeth=thresholding_fct, thrfct=XT):

@@ -1,6 +1,7 @@
 import numpy as np 
 import matplotlib.pyplot as plt 
 import pywt
+import scipy
 from skimage import exposure, img_as_float
 from src.despeckle_main import Speckle_removal
 
@@ -11,6 +12,8 @@ def sigma_l2():
 class Other_approachs(Speckle_removal): 
    def Hard_thresholding(t): 
         global H
+        if t == np.nan: 
+          return H
         res = H.copy()
         for i in range(H.shape[0]): 
             for j in range(H.shape[1]):
@@ -20,6 +23,8 @@ class Other_approachs(Speckle_removal):
    
    def Soft_thresholding(t):
         global H 
+        if t == np.nan: 
+          return H
         res = np.zeros_like(H)
         for i in range(H.shape[0]): 
             for j in range(H.shape[1]):
@@ -28,27 +33,38 @@ class Other_approachs(Speckle_removal):
         return res
    
    def XT(tau):
-        global H, nl
-        res_wav = H.copy()
-        inf_tau = np.where(np.abs(H) < tau)
-        for i in inf_tau: res_wav[i]  = H[i]*np.exp(nl * (np.abs(H[i]) - tau))
-        return res_wav
+     global H, nl
+     res_wav = H.copy()
+     if tau == np.nan:
+          return res_wav
+     inf_tau = np.where(np.abs(H) < tau)
+     for i in inf_tau: res_wav[i] = H[i]*np.exp(nl * (np.abs(H[i]) - tau))
+     return res_wav
    
    def VisuShrink():
-        global log_img
-        I = log_img
-        return np.std(I)*np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
+        global log_img, D, H
+        D_ = D[np.nonzero(D)]
+        return (np.median(np.abs(D_))/0.6745)*np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
+
    
    def BayesShrink():
         global H, D
-        return sigma_l2() / np.std(H)
+        D_ = D[np.nonzero(D)]
+        #H_ = H[np.nonzero(H)]
+        #(np.median(np.abs(H_))/0.6745)
+        if np.std(H)>0: 
+            return (np.median(np.abs(D_))/0.6745)**2 / np.std(H)
+        else: return (np.median(np.abs(D_))/0.6745)**2 / 1e-60
+
    
    def thresholding_fct():
-        global H, log_img, D
-        sigmai = np.var(log_img)
-        beta = np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
-        tau =  2*beta*np.abs(sigmai - sigma_l2()) / np.sqrt(sigmai)
-        return tau
+     global H, log_img, D, A
+     D_ = D[np.nonzero(D)]
+     H_ = H[np.nonzero(H)]
+     sigmai = (np.median(np.abs(H_))/0.6745)
+     beta = np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
+     tau =  2*beta*np.abs(sigmai**2 - (np.median(np.abs(D_))/0.6745)**2) / sigmai
+     return tau
    
    def run(self, level1, level2, wav,thrmeth=BayesShrink, thrfct=Soft_thresholding):
         global nl, D, H, log_img 

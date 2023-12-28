@@ -2,18 +2,16 @@ import numpy as np
 import pandas as pd 
 from skimage import exposure, img_as_float, color
 import pywt
+import scipy
 from src.utils import *
 import matplotlib.pyplot as plt
 from skimage.metrics import mean_squared_error, peak_signal_noise_ratio, structural_similarity
 
-def sigma_l2():
-      global D 
-      return (np.median(np.abs(D))/0.6745)**2
-
-
 def Hard_thresholding(t): 
     global H
     res = H.copy()
+    if t == np.nan: 
+        return H
     for i in range(H.shape[0]): 
         for j in range(H.shape[1]):
             if np.abs(H[i,j, 0])<t: 
@@ -22,6 +20,8 @@ def Hard_thresholding(t):
 
 def Soft_thresholding(t):
     global H 
+    if t == np.nan: 
+        return H
     res = np.zeros_like(H)
     for i in range(H.shape[0]): 
         for j in range(H.shape[1]):
@@ -32,25 +32,36 @@ def Soft_thresholding(t):
 def XT(tau):
     global H, nl
     res_wav = H.copy()
+    if tau == np.nan:
+        return res_wav
     inf_tau = np.where(np.abs(H) < tau)
-    for i in inf_tau: res_wav[i]  = H[i]*np.exp(nl * (np.abs(H[i]) - tau))
+    for i in inf_tau: res_wav[i] = H[i]*np.exp(nl * (np.abs(H[i]) - tau))
     return res_wav
 
+
 def VisuShrink():
-        global log_img
-        I = log_img
-        return np.std(I)*np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
+        global log_img, D, H
+        D_ = D[np.nonzero(D)]
+        return (np.median(np.abs(D_))/0.6745)*np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
 
 def BayesShrink():
         global H, D
-        return sigma_l2() / np.std(H)
+        D_ = D[np.nonzero(D)]
+        #H_ = H[np.nonzero(H)]
+        #(np.median(np.abs(H_))/0.6745)
+        if np.std(H)>0: 
+            return (np.median(np.abs(D_))/0.6745)**2 / np.std(H)
+        else: return (np.median(np.abs(D_))/0.6745)**2 / 1e-60
 
 def thresholding_fct():
-    global H, log_img, D
-    sigmai = np.var(log_img)
+    global H, log_img, D, A
+    D_ = D[np.nonzero(D)]
+    H_ = log_img[np.nonzero(log_img)]
+    sigmai = (np.median(np.abs(H_))/0.6745)
     beta = np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
-    tau =  2*beta*np.abs(sigmai - sigma_l2()) / np.sqrt(sigmai)
+    tau =  2*beta*np.abs(sigmai**2 - (np.median(np.abs(D_))/0.6745)**2) / sigmai
     return tau
+
 
 methods_thr = [Soft_thresholding, Hard_thresholding, XT]
 thr = [VisuShrink, BayesShrink, thresholding_fct]
@@ -91,7 +102,6 @@ def all_train(path_img, path_df, wav, methods_thr, thr):
     else: datafr.to_csv(path_df, columns=columns, index=None)
     pass
 
-
 def train_wavelet(path_img, path_df): 
     global img, log_img
     wavs = ['db1', 'db2', 'sym2', 'bior1.1']
@@ -107,7 +117,7 @@ def train_wavelet(path_img, path_df):
         level1 = [A1, H1, D1, V1]
         level2 = [A2, H2, D2, V2]
 
-        final_img = train_one([level1,level2], img, thresholding_fct2, XT, wav)
+        final_img = train_one([level1,level2], img, thresholding_fct, XT, wav)
         df.append({'img_name':path_img.split('/')[-1].split('.')[0], 'wavelet':wav, 'EKI':edge_keeping_index(img, final_img), 'SSIM': structural_similarity(color.rgb2gray(img), color.rgb2gray(final_img), win_size=7,data_range=img.max()), 'MSE':mean_squared_error(img, final_img), 'PSNR':peak_signal_noise_ratio(img, final_img)})
         # Ajouter un titre pour chaque colonne
         ax[i].set_title(wav, rotation='horizontal')

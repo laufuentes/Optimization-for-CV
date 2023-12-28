@@ -1,6 +1,43 @@
 import os
 import cv2 
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def new_df(df, wav): 
+    #Definition of a new dataframe gathering results from the average of each threshold function and type combination
+    new = pd.DataFrame()
+    thr = df['Threshold_type'].unique()
+    thr_fct = df['Threshold_function'].unique()
+
+    k = 0
+    new_cols = []
+    for i,t in enumerate(thr): 
+        for j,m in enumerate(thr_fct): 
+            new_cols.append(t+'_'+m)
+            k += 1 
+            new[k]= df[(df['Threshold_type']==t) & (df['Threshold_function']==m)].iloc[:, 3:].min()
+
+    new.columns = new_cols
+    new.to_csv("/Users/laurafuentesvicente/M2 Maths&IA/Optimization for CV/Project/images/synthetic/results_"+wav+".csv")
+    return new
+
+def three_bests(new, wav): 
+        max = np.unique(np.argsort(new.to_numpy(), axis=1)[(0,1,3), :2]).tolist()
+        mse = np.argsort(new.to_numpy(), axis=1, kind='mergesort')[2, :2]
+        [max.append(mse.tolist()[i]) for i in range(2)]
+        max = np.unique(max)
+        max_cols = [new.columns[i] for i in max]
+        best = new[max_cols]
+
+        sns.scatterplot(data=best)
+        plt.title(wav)
+        plt.xlabel('Metrics')
+        plt.ylabel('Values')
+        plt.savefig('images/Report/synthetic/Threshold_comparison'+wav+'.png')
+        plt.show()
+        return best
 
 def get_all_paths(folder_path):
     # Initialize an empty list to store paths
