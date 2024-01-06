@@ -9,8 +9,8 @@ Welcome to my Github repository for the project of Optimization for Computer Vis
 Medical ultrasonography serves as a crucial imaging modality in clinical diagnosis, relying on the principle of acoustic impedance. The efficiency of medical ultrasonography can be impacted by various constraints, including speckle, acoustic shadows, artifacts, etc. This study specifically addresses the issue of speckle, a granular multiplicative noise that degrades texture information and obscures details such as lines, edges, and boundaries in an image. The authors introduce, more precisely, a novel multi-scale and adaptive technique for ultrasound image despeckle. The technique proposed features a unique thresholding function, which progressively reduces wavelet coefficients to zero when their values fall below a specified threshold. This approach is based on two key principles: firstly, the statistical properties of the image across various decomposition levels, and secondly, the assumption that speckle predominantly manifests in low-valued wavelet coefficients.
 
 ### Guide 
-To run the implementations and recreate the report images, I created three guided python notebooks one for each . All functions deployed in notebooks are gathered in the folder \src. 
-In the \image folder you may find the resulting images and datasets from notebooks. Finally, in the folder \Dataset_BUSI_with_GT, we can find a reduced version of the ultrasound image dataset from Kaggle [2]. Our dataser contains 7 benign ultrasound images, 8 malignants and 6 normal. 
+To run the implementations and recreate the report images, I created four guided python notebooks one for each. All functions deployed in notebooks are gathered in the folder \src. 
+In the \image folder you may find the resulting images and datasets from notebooks. Finally, in the folder \Dataset_BUSI_with_GT, we can find a reduced version of the ultrasound image dataset from Kaggle [2]. Our dataser contains 2 normal ultrasound image, 1 benign and 1 malign. 
 
 In order to run properly all notebooks, we propose to run the following command to download the required python packages for implementation: 
 

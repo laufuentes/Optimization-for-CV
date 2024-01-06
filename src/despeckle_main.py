@@ -64,13 +64,15 @@ class Speckle_removal:
 class Paper_approach(Speckle_removal): 
     
     def thresholding_fct():
-        global H, log_img, D, A
-        D_ = D[np.nonzero(D)]
-        H_ = log_img[np.nonzero(log_img)]
-        sigmai = (np.median(np.abs(H_))/scipy.stats.norm.ppf(0.75))
-        beta = np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
-        tau =  2*beta*np.abs(sigmai**2 - (np.median(np.abs(D_))/0.6745)**2) / sigmai
-        return tau
+      global H, log_img, D, A
+      if D.all == 0: 
+          return 2*beta*np.abs(sigmai**2 - 0) / sigmai
+      D_ = D[np.nonzero(D)]
+      H_ = log_img[np.nonzero(log_img)]
+      sigmai = (np.median(np.abs(H_))/0.6745)
+      beta = np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
+      tau =  2*beta*np.abs(sigmai**2 - (np.median(np.abs(D_))/0.6745)**2) / sigmai
+      return tau
     
     def XT(tau):
         global H, nl

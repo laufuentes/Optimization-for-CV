@@ -18,7 +18,6 @@ def edge_keeping_index(original_image, filtered_image):
     num = np.sum(np.dot((laplacian_original - np.mean(laplacian_original)).T, (laplacian_filtered - np.mean(laplacian_filtered))))
     denom = np.sum(np.dot((laplacian_original - np.mean(laplacian_original)).T, (laplacian_original - np.mean(laplacian_original))))*np.sum(np.dot((laplacian_filtered - np.mean(laplacian_filtered)).T, (laplacian_filtered - np.mean(laplacian_filtered))))
     eki = num /np.sqrt(denom)
-
     return eki
 
 def Hard_thresholding(t): 
@@ -50,18 +49,25 @@ def XT(tau):
 
 
 def VisuShrink():
-        global log_img, D
+        global log_img, D, H
+        if D.all() == 0: 
+            return 0
         D_ = D[np.nonzero(D)]
         return (np.median(np.abs(D_))/0.6745)*np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
 
 def BayesShrink():
         global H, D
         D_ = D[np.nonzero(D)]
-        H_ = H[np.nonzero(H)]
-        return (np.median(np.abs(D_))/0.6745)**2 / (np.median(np.abs(H_))/0.6745)
+        sigma_i = (np.median(np.abs(H))/0.6745)**2 - np.std(H)**2
+        sigma_x = np.sqrt(np.maximum(0, sigma_i))
+        if sigma_x == 0: 
+            return np.max(H)
+        return (np.median(np.abs(D_))/0.6745)**2 / sigma_x
 
 def thresholding_fct():
     global H, log_img, D, A
+    if D.all == 0: 
+        return 2*beta*np.abs(sigmai**2 - 0) / sigmai
     D_ = D[np.nonzero(D)]
     H_ = log_img[np.nonzero(log_img)]
     sigmai = (np.median(np.abs(H_))/0.6745)
@@ -73,7 +79,6 @@ def thresholding_fct():
 methods_thr = [Soft_thresholding, Hard_thresholding, XT]
 thr = [VisuShrink, BayesShrink, thresholding_fct]
 columns = ['img_name', 'Threshold_type', 'Threshold_function','EKI','SSIM', 'MSE', 'PSNR']
-
 
 def all_train_synthetic(path_img, og_img, path_df, wav, methods_thr, thr): 
     global columns, img, log_img
@@ -132,3 +137,4 @@ def train_one(tot, img, thr_type, thr_fct, wav):
     imglog = pywt.idwt2((An1, (leveln1[0], leveln1[1], leveln1[2])), wav)
     final_img = (exposure.rescale_intensity(np.exp(imglog[: , :img.shape[1]]), out_range=(0,1))).clip(0,1)
     return final_img 
+

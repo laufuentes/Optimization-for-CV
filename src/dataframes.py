@@ -45,7 +45,7 @@ class df_9:
 
         for i in range(self.new.shape[0]):
             yy = (self.new.iloc[i]).to_numpy()
-            sns.barplot(x=self.new.columns[0:], y=yy[0:], ax=ax[i], hue=self.new.columns[1:])
+            sns.barplot(x=self.new.columns[0:], y=yy[0:], ax=ax[i], hue=self.new.columns[0:])
             ax[i].set_ylabel(yy[0])
             ax[i].set_xlabel((self.new.iloc[i]).name)
 
@@ -134,7 +134,7 @@ class df_wavelets:
 
         for i in range(self.new.shape[0]):
             yy = (self.new.iloc[i]).to_numpy()
-            sns.barplot(x=self.new.columns[0:], y=yy[0:], ax=ax[i], hue=self.new.columns[1:])
+            sns.barplot(x=self.new.columns[0:], y=yy[0:], ax=ax[i], hue=self.new.columns[0:])
             ax[i].set_xlabel((self.new.iloc[i]).name)
             plt.setp(ax[i].xaxis.get_majorticklabels(), rotation=45, ha='right')  # Rotate x-axis labels
 

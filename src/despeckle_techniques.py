@@ -42,29 +42,32 @@ class Other_approachs(Speckle_removal):
      return res_wav
    
    def VisuShrink():
-        global log_img, D, H
-        D_ = D[np.nonzero(D)]
-        return (np.median(np.abs(D_))/0.6745)*np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
-
+      global log_img, D, H
+      if D.all() == 0: 
+        return 0
+      D_ = D[np.nonzero(D)]
+      return (np.median(np.abs(D_))/0.6745)*np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
+   
    
    def BayesShrink():
-        global H, D
-        D_ = D[np.nonzero(D)]
-        #H_ = H[np.nonzero(H)]
-        #(np.median(np.abs(H_))/0.6745)
-        if np.std(H)>0: 
-            return (np.median(np.abs(D_))/0.6745)**2 / np.std(H)
-        else: return (np.median(np.abs(D_))/0.6745)**2 / 1e-60
+      global H, D
+      D_ = D[np.nonzero(D)]
+      sigma_i = (np.median(np.abs(H))/0.6745)**2 - np.std(H)**2
+      sigma_x = np.sqrt(np.maximum(0, sigma_i))
+      if sigma_x == 0: 
+        return np.max(H)
+      return (np.median(np.abs(D_))/0.6745)**2 / sigma_x
 
-   
    def thresholding_fct():
-     global H, log_img, D, A
-     D_ = D[np.nonzero(D)]
-     H_ = H[np.nonzero(H)]
-     sigmai = (np.median(np.abs(H_))/0.6745)
-     beta = np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
-     tau =  2*beta*np.abs(sigmai**2 - (np.median(np.abs(D_))/0.6745)**2) / sigmai
-     return tau
+      global H, log_img, D, A
+      if D.all == 0: 
+          return 2*beta*np.abs(sigmai**2 - 0) / sigmai
+      D_ = D[np.nonzero(D)]
+      H_ = log_img[np.nonzero(log_img)]
+      sigmai = (np.median(np.abs(H_))/0.6745)
+      beta = np.sqrt(2*np.log(log_img.shape[0]*log_img.shape[1]))
+      tau =  2*beta*np.abs(sigmai**2 - (np.median(np.abs(D_))/0.6745)**2) / sigmai
+      return tau
    
    def run(self, level1, level2, wav,thrmeth=BayesShrink, thrfct=Soft_thresholding):
         global nl, D, H, log_img 
