@@ -97,5 +97,5 @@ class Other_approachs(Speckle_removal):
 
 
 if __name__=='__main__':
-    img_path = "/Users/laurafuentesvicente/M2 Maths&IA/Optimization for CV/Project/Dataset_BUSI_with_GT/benign/benign (341).png" #109, 423, 434, 421, 392, 341, 313
+    img_path = "Dataset_BUSI_with_GT/benign/benign (341).png" #109, 423, 434, 421, 392, 341, 313
     img = plt.imread(img_path)

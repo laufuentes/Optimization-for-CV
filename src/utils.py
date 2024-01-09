@@ -20,7 +20,7 @@ def new_df(df, wav):
             new[k]= df[(df['Threshold_type']==t) & (df['Threshold_function']==m)].iloc[:, 3:].min()
 
     new.columns = new_cols
-    new.to_csv("/Users/laurafuentesvicente/M2 Maths&IA/Optimization for CV/Project/images/synthetic/results_"+wav+".csv")
+    new.to_csv("images/synthetic/results_"+wav+".csv")
     return new
 
 def three_bests(new, wav): 

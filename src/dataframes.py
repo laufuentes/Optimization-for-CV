@@ -28,7 +28,7 @@ class df_9:
 
         new.columns = new_cols
         self.new = new
-        new.to_csv("/Users/laurafuentesvicente/M2 Maths&IA/Optimization for CV/Project/images/"+self.wav+"/results_"+self.wav+".csv")
+        new.to_csv("images/"+self.wav+"/results_"+self.wav+".csv")
         return new
 
     def three_bests(self): 
@@ -80,7 +80,7 @@ class df_Filters:
             new[i] = self.df[self.df['method']==w].iloc[:, 2:].mean()
 
         new.columns = methods_name 
-        new.to_csv('/Users/laurafuentesvicente/M2 Maths&IA/Optimization for CV/Project/images/Report/filters_summary.csv')
+        new.to_csv('images/Report/filters_summary.csv')
         return new
     
     def plt_Filters(self): 
@@ -119,7 +119,7 @@ class df_wavelets:
             new[i] = self.df[self.df['wavelet']==w].iloc[:, 2:].mean()
 
         new.columns = self.wavs 
-        new.to_csv('/Users/laurafuentesvicente/M2 Maths&IA/Optimization for CV/Project/images/wavelets/results.csv')
+        new.to_csv('images/wavelets/results.csv')
         return new
     
     def plt_wavelets_performance(self):
